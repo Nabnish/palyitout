@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home - One Sound</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: url('0c21c0a5-560a-4be2-ab17-0c2dbcb09449.png') center/cover no-repeat;
+    color: white;
+    overflow-x: hidden;
+    animation: fadeInBody 1s ease forwards;
+  }
+
+  @keyframes fadeInBody { from { opacity: 0; } to { opacity: 1; } }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 50px;
+    background: rgba(0,0,0,0.8);
+    position: relative;
+    z-index: 2;
+    animation: slideDown 1s ease forwards;
+  }
+
+  @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  nav button {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    background-color: rgba(252, 255, 254, 0);
+    border: none;
+    font-size: medium;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  nav button:hover {
+    color: #ff004c;
+    transform: scale(1.1);
+    text-shadow: 0 0 8px #ff004c;
+  }
+
+  .main {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .main h1 {
+    font-size: 60px;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeSlideIn 1s forwards;
+    animation-delay: 0.5s;
+  }
+
+  .main p {
+    font-size: 20px;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: fadeSlideIn 1s forwards;
+    animation-delay: 1s;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .main button {
+    padding: 15px 30px;
+    background: #ff004c;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeSlideIn 1s forwards;
+    animation-delay: 1.5s;
+  }
+
+  .main button:hover {
+    background: #e60042;
+    transform: scale(1.05);
+    box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c;
+  }
+
+  video {
+    padding: 0px;
+    margin: 0px;
+    position: absolute;
+    z-index: -3;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: fadeInVideo 2s ease forwards;
+  }
+
+  @keyframes fadeInVideo { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+  <video autoplay muted loop id="myVideo">
+    <source src="https://v1.pinimg.com/videos/mc/720p/1e/cb/9b/1ecb9b04dca2e3d8eafcc7d3f9aeeeed.mp4" type="video/mp4">
+  </video>
+
+  <nav>
+    <div>Play it out</div>
+    <div>
+      <button>Explore</button>
+      <button>My playlist</button>
+      <button onclick="window.location.href='/logout'">Log out</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <h1>Playlist Generator</h1>
+    <p>What's your mood today?</p>
+    <button onclick="window.location.href='/gemini'">Discover</button>
+  </div>
+</body>
+</html>
