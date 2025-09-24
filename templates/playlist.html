@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemini Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    background: #121212;
+    color: #fff;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: 220px;
+    background: #040404;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  .sidebar h1 { color: #1db954; margin-bottom: 30px; font-size: 1.5em; }
+  .sidebar a { color: #b3b3b3; text-decoration: none; margin-bottom: 20px; font-weight: 600; transition: color 0.2s; }
+  .sidebar a:hover { color: #1db954; }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .playlist-area { flex: 1; padding: 20px; overflow-y: auto; }
+  .playlist-area h2 { margin-top: 0; margin-bottom: 15px; }
+  .song { display: flex; align-items: center; padding: 10px; border-radius: 8px; cursor: pointer; transition: background 0.2s; margin-bottom: 10px; }
+  .song:hover { background: #282828; }
+  .song img { width: 50px; height: 50px; margin-right: 15px; border-radius: 5px; object-fit: cover; }
+  .song-info h3 { margin: 0; font-size: 1em; }
+  .song-info p { margin: 0; font-size: 0.85em; color: #b3b3b3; }
+
+  .queue { width: 250px; background: #181818; padding: 20px; overflow-y: auto; }
+  .queue h3 { margin-top: 0; margin-bottom: 15px; }
+
+  .player-bar {
+    position: fixed;
+    bottom: 0; left: 220px; right: 250px;
+    height: 90px;
+    background: #181818;
+    display: flex; align-items: center; padding: 0 20px;
+  }
+  .player-left { display: flex; align-items: center; }
+  .player-left img { width: 60px; height: 60px; margin-right: 15px; border-radius: 5px; object-fit: cover; }
+  .player-controls { display: flex; align-items: center; gap: 15px; margin-left: 30px; }
+  .player-controls button { background: none; border: none; color: #fff; font-size: 1.5em; cursor: pointer; transition: color 0.2s; }
+  .player-controls button:hover { color: #1db954; }
+  .progress-container { flex: 1; height: 5px; background: #404040; border-radius: 5px; margin: 0 20px; cursor: pointer; }
+  .progress { height: 100%; width: 0%; background: #1db954; border-radius: 5px; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h1>Gemini</h1>
+  <a href="{{ url_for('home') }}">Home</a>
+  <a href="#">Library</a>
+  <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+
+<div class="main">
+  <div class="playlist-area">
+    <h2>Your Playlist</h2>
+    {% for song in songs %}
+      <div class="song {% if not song.uri %}disabled{% endif %}" data-src="{{ song.uri }}" {% if not song.uri %}style="opacity:0.5;cursor:default"{% endif %}>
+        <img src="{{ song.album_art }}" alt="Album Art">
+        <div class="song-info">
+          <h3>{{ song.title }}</h3>
+          <p>{{ song.artist }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="queue">
+  <h3>Up Next</h3>
+  <div id="queue-list">
+    {% for song in songs[1:] %}
+      <p>{{ song.title }} - {{ song.artist }}</p>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="player-bar">
+  <div class="player-left">
+    <img src="" alt="Album Art" id="current-art">
+    <span id="current-title">Select a song</span>
+  </div>
+  <div class="player-controls">
+    <button id="prev">⏮️</button>
+    <button id="play">▶️</button>
+    <button id="next">⏭️</button>
+  </div>
+  <div class="progress-container" id="progress-container">
+    <div class="progress" id="progress"></div>
+  </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+    
+    const audio = document.getElementById('audio');
+    const playBtn = document.getElementById('play');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const songs = document.querySelectorAll('.song');
+    const currentArt = document.getElementById('current-art');
+    const currentTitle = document.getElementById('current-title');
+    const progress = document.getElementById('progress');
+    const progressContainer = document.getElementById('progress-container');
+    const queueList = document.getElementById('queue-list');
+    
+    let currentIndex = 0;
+    let isPlaying = false;
+    
+  
+    const playableSongs = Array.from(songs).filter(s => s.dataset.src);
+   
+
+function loadSong(index) {
+  if (!playableSongs[index]) return;
+  const song = playableSongs[index];
+  audio.src = song.dataset.src;
+  currentTitle.textContent = song.querySelector('h3').textContent + " - " + song.querySelector('p').textContent;
+  currentArt.src = song.querySelector('img').src;
+
+  playableSongs.forEach(s => s.classList.remove('active'));
+  song.classList.add('active');
+
+  queueList.innerHTML = '';
+  for (let i = index + 1; i < playableSongs.length; i++) {
+    const t = playableSongs[i].querySelector('h3').textContent + ' - ' + playableSongs[i].querySelector('p').textContent;
+    const p = document.createElement('p'); p.textContent = t;
+    queueList.appendChild(p);
+  }
+}
+
+function playSong() { audio.play(); isPlaying = true; playBtn.textContent = '⏸️'; }
+function pauseSong() { audio.pause(); isPlaying = false; playBtn.textContent = '▶️'; }
+
+playBtn.addEventListener('click', () => { isPlaying ? pauseSong() : playSong(); });
+prevBtn.addEventListener('click', () => { currentIndex = (currentIndex - 1 + playableSongs.length) % playableSongs.length; loadSong(currentIndex); playSong(); });
+nextBtn.addEventListener('click', () => { currentIndex = (currentIndex + 1) % playableSongs.length; loadSong(currentIndex); playSong(); });
+
+playableSongs.forEach((song, index) => {
+  song.addEventListener('click', () => {
+    currentIndex = index;
+    loadSong(currentIndex);
+    playSong();
+  });
+});
+
+audio.addEventListener('timeupdate', () => {
+  const percent = (audio.currentTime / audio.duration) * 100;
+  progress.style.width = percent + '%';
+});
+
+progressContainer.addEventListener('click', (e) => {
+  const width = progressContainer.clientWidth;
+  const clickX = e.offsetX;
+  audio.currentTime = (clickX / width) * audio.duration;
+});
+
+
+if (playableSongs.length) loadSong(currentIndex);
+</script>
+
+</body>
+</html>

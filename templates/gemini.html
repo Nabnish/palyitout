@@ -1,123 +1,131 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gemini AI - One Sound</title>
-<style>
-  body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background: url('https://i.pinimg.com/736x/29/c5/7f/29c57fed3a59e064c1cecea1e04ddea3.jpg') center/cover no-repeat;
-    color: white;
-    height: 100vh;
-    overflow: hidden;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini AI - One Sound</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: url('https://i.pinimg.com/736x/29/c5/7f/29c57fed3a59e064c1cecea1e04ddea3.jpg') center/cover no-repeat;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-  .container {
-    position: relative;
-    z-index: 1;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 30px;
-    background: rgba(0,0,0,0.5);
-    animation: fadeInContainer 1s ease forwards;
-  }
+    .container {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 30px;
+      background: rgba(0, 0, 0, 0.5);
+      animation: fadeInContainer 1s ease forwards;
+    }
 
-  .chat-header {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 20px;
-  }
+    .chat-header {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
 
-  .chat-box {
-    width: 100%;
-    max-width: 500px;
-    background: rgba(0,0,0,0.7);
-    border-radius: 15px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-height: 50vh;
-    overflow-y: auto;
-  }
+    .chat-box {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
 
-  .message {
-    padding: 12px 18px;
-    border-radius: 15px;
-    line-height: 1.4;
-    max-width: 80%;
-  }
+    .message {
+      padding: 12px 18px;
+      border-radius: 15px;
+      line-height: 1.4;
+      max-width: 80%;
+    }
 
-  .message.user {
-    align-self: flex-end;
-    background: #ff004c;
-    color: white;
-    border-bottom-right-radius: 0;
-  }
+    .message.user {
+      align-self: flex-end;
+      background: #ff004c;
+      color: white;
+      border-bottom-right-radius: 0;
+    }
 
-  .message.ai {
-    align-self: flex-start;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    border-bottom-left-radius: 0;
-  }
+    .message.ai {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-bottom-left-radius: 0;
+    }
 
-  .chat-input {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    gap: 10px;
-  }
+    .chat-input {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      gap: 10px;
+    }
 
-  .chat-input input {
-    flex: 1;
-    padding: 12px 18px;
-    border-radius: 25px;
-    border: none;
-    font-size: 16px;
-    background: rgba(255,255,255,0.1);
-    color: white;
-  }
+    .chat-input input {
+      flex: 1;
+      padding: 12px 18px;
+      border-radius: 25px;
+      border: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
 
-  .chat-input button, .playlist-button {
-    padding: 12px 25px;
-    border-radius: 25px;
-    border: none;
-    background: #ff004c;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
+    .chat-input button,
+    .playlist-button {
+      padding: 12px 25px;
+      border-radius: 25px;
+      border: none;
+      background: #ff004c;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-  .chat-input button:hover, .playlist-button:hover {
-    background: #e60042;
-    box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c;
-  }
+    .chat-input button:hover,
+    .playlist-button:hover {
+      background: #e60042;
+      box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c;
+    }
 
-  @keyframes fadeInContainer {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-</style>
+    @keyframes fadeInContainer {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <div class="container">
     <div class="chat-header">Gemini AI</div>
 
     <div class="chat-box">
       {% if response %}
-        <div class="message user">{{ request.form.get('message') }}</div>
-        <div class="message ai">{{ response }}</div>
+      <div class="message user">{{ request.form.get('message') }}</div>
+      <div class="message ai">{{ response }}</div>
       {% else %}
-        <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
+      <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
       {% endif %}
     </div>
 
@@ -125,187 +133,17 @@
       <input type="text" name="message" placeholder="Type a message..." required>
       <button type="submit">Send</button>
     </form>
+   
 
     {% if response %}
-      <!-- Create Spotify playlist button -->
-      <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
-        <input type="hidden" name="songs" value="{{ response }}">
-        <button type="submit" class="playlist-button">Create Spotify Playlist</button>
-      </form>
+
+
+    <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
+      <input type="hidden" name="songs" value="{{ response }}">
+      <button type="submit" class="playlist-button">Create Spotify Playlist</button>
+    </form>
     {% endif %}
   </div>
 </body>
+
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gemini AI - One Sound</title>
-<style>
-  body {
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    background: url('https://i.pinimg.com/736x/29/c5/7f/29c57fed3a59e064c1cecea1e04ddea3.jpg') center/cover no-repeat;
-    color: white;
-  }
-
-  video {
-    position: absolute;
-    z-index: -3;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 30px;
-    background: rgba(0,0,0,0.4);
-    animation: fadeInContainer 1s ease forwards;
-  }
-
-  .chat-header {
-    font-size: 28px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    margin-bottom: 30px;
-    animation: slideDown 1s ease forwards;
-  }
-
-  .chat-box {
-    width: 100%;
-    max-width: 500px;
-    background: rgba(0,0,0,0.7);
-    border-radius: 15px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-height: 60vh;
-    overflow-y: auto;
-  }
-
-  .message {
-    padding: 12px 18px;
-    border-radius: 15px;
-    line-height: 1.4;
-    max-width: 80%;
-    animation: slideIn 0.8s ease forwards;
-  }
-
-  .message.user {
-    align-self: flex-end;
-    background: #ff004c;
-    color: white;
-    border-bottom-right-radius: 0;
-  }
-
-  .message.ai {
-    align-self: flex-start;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    border-bottom-left-radius: 0;
-  }
-
-  .chat-input {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .chat-input input {
-    flex: 1;
-    padding: 12px 18px;
-    border-radius: 25px;
-    border: none;
-    font-size: 16px;
-    background: rgba(255,255,255,0.1);
-    color: white;
-  }
-
-  .chat-input button {
-    padding: 12px 25px;
-    border-radius: 25px;
-    border: none;
-    background: #ff004c;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .chat-input button:hover {
-    background: #e60042;
-    box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c;
-  }
-
-  @keyframes fadeInContainer {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideDown {
-    from {
-      transform: translateY(-30px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateX(30px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-</style>
-</head>
-<body>
-  <video autoplay muted loop>
-    <source src="https://v1.pinimg.com/videos/mc/720p/1e/cb/9b/1ecb9b04dca2e3d8eafcc7d3f9aeeeed.mp4" type="video/mp4">
-  </video>
-
-  <div class="container">
-    <div class="chat-header">Gemini AI</div>
-
-    <div class="chat-box">
-      {% if response %}
-        <div class="message user">{{ request.form.get('message') }}</div>
-        <div class="message ai">{{ response }}</div>
-      {% else %}
-        <div class="message ai">Hello! I'm Gemini AI. Ask me anything.</div>
-      {% endif %}
-    </div>
-    
-    <form method="POST" class="chat-input">
-      <input type="text" name="message" placeholder="Type a message..." required>
-      <button type="submit">Send</button>
-    </form>
-    
-
-    </form>
-  </div>
-</body>
-</html>
->>>>>>> 866814961c062d2ffa52ba62ffa5f29751ab00a9
