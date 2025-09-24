@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - One Sound</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background: url('0c21c0a5-560a-4be2-ab17-0c2dbcb09449.png') center/cover no-repeat;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    animation: bgFade 0.5s ease forwards;
+  }
+
+  .login-box {
+    background: rgba(0, 0, 0, 0.418);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 2px 2px 8px black;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(40px);
+    animation: slideUp 1s ease forwards;
+    animation-delay: 0.5s;
+  }
+
+  .login-box h2 {
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    animation: fadeIn 1s ease forwards;
+    animation-delay: 1s;
+    opacity: 0;
+  }
+
+  .login-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: none;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+  }
+  .login-box input:nth-of-type(1) { animation-delay: 1.2s; }
+  .login-box input:nth-of-type(2) { animation-delay: 1.4s; }
+
+  .login-box button {
+    width: 100%;
+    padding: 12px;
+    background: #ff004c;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+    margin: 10px 0;
+  }
+  .login-box button:nth-of-type(1) { animation-delay: 1.6s; }
+  .login-box button:nth-of-type(2) { animation-delay: 1.8s; }
+
+  .login-box button:hover {
+    background: #e60042;
+    box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c;
+  }
+
+  img {
+    position: relative;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+  }
+
+  .flash-message {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .flash-success { color: #00ff99; }
+  .flash-error { color: #ff6666; }
+
+  @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { to { opacity: 1; } }
+  @keyframes bgFade { from { filter: brightness(0.5); } to { filter: brightness(1); } }
+</style>
+</head>
+<body>
+  <img src="https://i.pinimg.com/1200x/1e/2b/cf/1e2bcfce5e32ea86eaa81efd21a89fb1.jpg" width="250">
+  <div class="login-box">
+    <h2>Play It Out</h2>
+    <form action="/login" method="POST">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+      <button type="button" onclick="window.location.href='/signup'">Signup</button>
+    </form>
+
+    
+  </div>
+</body>
+</html>
