@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +13,6 @@
       height: 100vh;
       overflow: hidden;
     }
-
     .container {
       position: relative;
       z-index: 1;
@@ -24,20 +22,14 @@
       justify-content: flex-start;
       align-items: center;
       padding: 30px;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0,0,0,0.5);
       animation: fadeInContainer 1s ease forwards;
     }
-
-    .chat-header {
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
+    .chat-header { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
     .chat-box {
       width: 100%;
       max-width: 500px;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0,0,0,0.7);
       border-radius: 15px;
       padding: 20px;
       display: flex;
@@ -46,86 +38,29 @@
       max-height: 50vh;
       overflow-y: auto;
     }
-
-    .message {
-      padding: 12px 18px;
-      border-radius: 15px;
-      line-height: 1.4;
-      max-width: 80%;
-    }
-
-    .message.user {
-      align-self: flex-end;
-      background: #ff004c;
-      color: white;
-      border-bottom-right-radius: 0;
-    }
-
-    .message.ai {
-      align-self: flex-start;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      border-bottom-left-radius: 0;
-    }
-
-    .chat-input {
-      margin-top: 20px;
-      width: 100%;
-      max-width: 500px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 12px 18px;
-      border-radius: 25px;
-      border: none;
-      font-size: 16px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-
-    .chat-input button,
-    .playlist-button {
-      padding: 12px 25px;
-      border-radius: 25px;
-      border: none;
-      background: #ff004c;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .chat-input button:hover,
-    .playlist-button:hover {
-      background: #e60042;
-      box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c;
-    }
-
-    @keyframes fadeInContainer {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
+    .message { padding: 12px 18px; border-radius: 15px; line-height: 1.4; max-width: 80%; }
+    .message.user { align-self: flex-end; background: #ff004c; color: white; border-bottom-right-radius: 0; }
+    .message.ai { align-self: flex-start; background: rgba(255,255,255,0.1); color: white; border-bottom-left-radius: 0; }
+    .chat-input { margin-top: 20px; width: 100%; max-width: 500px; display: flex; gap: 10px; }
+    .chat-input input { flex: 1; padding: 12px 18px; border-radius: 25px; border: none; font-size: 16px; background: rgba(255,255,255,0.1); color: white; }
+    .chat-input button, .playlist-button { padding: 12px 25px; border-radius: 25px; border: none; background: #ff004c; color: white; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+    .chat-input button:hover, .playlist-button:hover { background: #e60042; box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c; }
+    @keyframes fadeInContainer { from { opacity:0; } to { opacity:1; } }
+    .playlist { margin-top: 20px; max-width: 500px; }
+    .song { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .song img { border-radius: 8px; }
   </style>
 </head>
-
 <body>
   <div class="container">
     <div class="chat-header">Gemini AI</div>
 
     <div class="chat-box">
       {% if response %}
-      <div class="message user">{{ request.form.get('message') }}</div>
-      <div class="message ai">{{ response }}</div>
+        <div class="message user">{{ request.form.get('message') }}</div>
+        <div class="message ai">{{ response }}</div>
       {% else %}
-      <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
+        <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
       {% endif %}
     </div>
 
@@ -133,62 +68,37 @@
       <input type="text" name="message" placeholder="Type a message..." required>
       <button type="submit">Send</button>
     </form>
-   
 
-    {% if response %}
-
-
-    <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
-      <input type="hidden" name="songs" value="{{ response }}">
-      <button type="submit" class="playlist-button">Create Spotify Playlist</button>
-    </form>
-    {% endif %}
-  </div>
-  <div class="chat-box">
-    {% if response %}
-      <div class="message user">{{ request.form.get('message') }}</div>
-      <div class="message ai">{{ response }}</div>
-    {% else %}
-      <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
-    {% endif %}
-  </div>
-  
-  <form method="POST" class="chat-input">
-    <input type="text" name="message" placeholder="Type a message..." required>
-    <button type="submit">Send</button>
-  </form>
-  
-  {% if songs %}
-    <div class="playlist" style="margin-top: 20px; max-width: 500px;">
-      <h3>Your Playlist:</h3>
-      {% for song in songs %}
-        <div class="song" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-          <img src="{{ song.album_art }}" alt="Album Art" width="60" height="60" style="border-radius: 8px;">
-          <div style="flex: 1;">
-            <strong>{{ song.title }}</strong> - {{ song.artist }}<br>
-            {% if song.uri %}
-              <audio controls style="width: 100%;">
-                <source src="{{ song.uri }}" type="audio/mpeg">
-              </audio>
-            {% endif %}
-            {% if spotify_connected %}
-              <a href="{{ song.spotify_url }}" target="_blank" style="color: #ff004c;">Open in Spotify</a>
-            {% endif %}
+    {% if songs %}
+      <div class="playlist">
+        <h3>Your Playlist:</h3>
+        {% for song in songs %}
+          <div class="song">
+            <img src="{{ song.album_art }}" width="60" height="60">
+            <div style="flex:1;">
+              <strong>{{ song.title }}</strong> - {{ song.artist }}<br>
+              {% if song.uri %}
+                <audio controls style="width: 100%;">
+                  <source src="{{ song.uri }}" type="audio/mpeg">
+                </audio>
+              {% endif %}
+              {% if spotify_connected %}
+                <a href="{{ song.spotify_url }}" target="_blank" style="color:#ff004c;">Open in Spotify</a>
+              {% endif %}
+            </div>
           </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-  
-  {% if spotify_connected %}
-    <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
-      <input type="hidden" name="songs" value="{{ response }}">
-      <button type="submit" class="playlist-button" style="margin-top: 15px;">Create Spotify Playlist</button>
-    </form>
-  {% else %}
-    <a href="{{ url_for('spotify_login') }}" class="playlist-button" style="margin-top: 15px;">Connect Spotify</a>
-  {% endif %}
-  
-</body>
+        {% endfor %}
+      </div>
+    {% endif %}
 
+    {% if spotify_connected %}
+      <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
+        <input type="hidden" name="songs" value="{{ song_str }}">
+        <button type="submit" class="playlist-button">Create Spotify Playlist</button>
+      </form>
+    {% else %}
+      <a href="{{ url_for('spotify_login') }}" class="playlist-button" style="margin-top: 15px;">Connect Spotify</a>
+    {% endif %}
+  </div>
+</body>
 </html>

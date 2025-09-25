@@ -2,10 +2,10 @@ import os
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-import google.generativeai as genai 
+import google.generativeai as genai
 from dotenv import load_dotenv
-from spotipy.oauth2 import SpotifyOAuth
 import spotipy
+from spotipy.oauth2 import SpotifyOAuth
 
 load_dotenv()
 
@@ -34,7 +34,6 @@ try:
     genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 except Exception as e:
     print(f"Error configuring Gemini API: {e}")
-    flash("API key not configured. Gemini functionality may not work.", "error")
 
 # Spotify config
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
@@ -125,25 +124,13 @@ def gemini():
                         "title": title.strip(),
                         "artist": artist.strip(),
                         "uri": "",  
+                        "spotify_url": "",
                         "album_art": "https://via.placeholder.com/60"
                     })
             session["song_list"] = song_list
 
         except Exception as e:
             flash(f"Failed to generate playlist: {e}", "error")
-        import spotipy
-        from spotipy.oauth2 import SpotifyOAuth
-        if 'spotify_token' in session:
-            sp = spotipy.Spotify(auth=session['spotify_token'])
-            for song in song_list:
-                query = f"{song['title']} {song['artist']}"
-                results = sp.search(q=query, type='track', limit=1)
-            if results['tracks']['items']:
-                track = results['tracks']['items'][0]
-                song['uri'] = track['preview_url']   # 30s preview
-                song['spotify_url'] = track['external_urls']['spotify']
-                song['album_art'] = track['album']['images'][0]['url']
-
 
     # If Spotify connected, fetch preview URLs
     spotify_token = session.get("spotify_token")
@@ -159,7 +146,6 @@ def gemini():
                 song['album_art'] = track['album']['images'][0]['url']
 
     return render_template("gemini.html", response=response_text, songs=song_list, spotify_connected=bool(spotify_token))
-
 
 @app.route("/spotify/login")
 def spotify_login():
@@ -195,24 +181,36 @@ def create_spotify_playlist():
         return redirect(url_for("gemini"))
 
     songs = request.form["songs"].split(',')
-    token = session["spotify_token"]
-    sp = spotipy.Spotify(auth=token)
+    sp = spotipy.Spotify(auth=session["spotify_token"])
     user_id = sp.current_user()['id']
-    playlist = sp.user_playlist_create(user=user_id, name="Gemini AI Playlist", public=True)
+    playlist = sp.user_playlist_create(user_id, name="Gemini AI Playlist", public=True)
 
-    track_uris = []
+    track_list = []
+
     for song in songs:
         results = sp.search(q=song.strip(), limit=1, type='track')
         if results['tracks']['items']:
-            track_uris.append(results['tracks']['items'][0]['uri'])
+            track = results['tracks']['items'][0]
+            track_list.append({
+                "title": track['name'],
+                "artist": track['artists'][0]['name'],
+                "uri": track['preview_url'],        # 30s preview
+                "spotify_url": track['external_urls']['spotify']
+            })
+            # Add track to Spotify playlist
+            sp.playlist_add_items(playlist['id'], [track['uri']])
 
-    if track_uris:
-        sp.playlist_add_items(playlist['id'], track_uris)
-        flash("Playlist created on Spotify!", "success")
-    else:
-        flash("No tracks found for these songs.", "error")
+    session["playlist_tracks"] = track_list
 
-    return redirect(url_for("gemini"))
+    return redirect(url_for("playlist_page"))
+
+@app.route("/playlist")
+def playlist_page():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    tracks = session.get("playlist_tracks", [])
+    return render_template("playlist.html", songs=tracks)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

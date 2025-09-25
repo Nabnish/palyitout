@@ -3,171 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lofi Music Player</title>
+<title>Lofi Girl Player</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <style>
-  /* Reset */
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', monospace; }
-
+  * { margin:0; padding:0; box-sizing:border-box; }
   body {
-    background: #2b2b2b;
+    font-family: 'UnifrakturCook', cursive;
+    background: url('file-MBW4ZT5yGUAcer6eWREox3.png') no-repeat center center/cover;
     color: #fff;
-    display: flex;
     height: 100vh;
     overflow: hidden;
-  }
-
-  /* Nav Bar */
-  nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: rgba(40, 40, 40, 0.9);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
-    z-index: 10;
-  }
-
-  nav h1 {
-    font-size: 1.5rem;
-    color: #f0c674;
-  }
-
-  nav ul {
-    display: flex;
-    gap: 20px;
-  }
-
-  nav ul li {
-    list-style: none;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  nav ul li:hover {
-    color: #c678dd;
-  }
-
-  /* Playlist Bar */
-  .playlist {
-    width: 250px;
-    background: rgba(50, 50, 50, 0.95);
-    padding: 80px 10px 10px 10px;
-    overflow-y: auto;
-  }
-
-  .playlist h2 {
-    margin-bottom: 10px;
-    color: #f0c674;
-  }
-
-  .playlist ul li {
-    margin: 10px 0;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  .playlist ul li:hover {
-    color: #c678dd;
-  }
-
-  /* Main Content */
-  .main {
-    flex: 1;
-    margin-left: 250px;
-    padding-top: 80px;
     position: relative;
   }
 
-  /* Bottom Player */
-  .player {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 300px;
-    background: rgba(40, 40, 40, 0.9);
-    padding: 15px;
+  /* Playlist */
+  .playlist {
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    bottom: 50px;
+    width: 250px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.4);
     border-radius: 15px;
+    padding: 15px;
+  }
+
+  .playlist h2 {
+    margin-bottom: 15px;
+    color: #ff3c78;
+    font-size: 1.2rem;
+  }
+
+  .playlist-item {
+    padding: 8px 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .playlist-item:hover {
+    background: rgba(255, 60, 120, 0.5);
+    transform: translateX(5px);
+  }
+
+  /* Player */
+  .player {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    padding: 15px 25px;
+    border-radius: 20px;
     display: flex;
-    flex-direction: column;
     align-items: center;
+    gap: 15px;
   }
 
-  .player audio {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .player-controls {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-  }
-
-  .player-controls button {
-    background: #c678dd;
-    border: none;
-    padding: 10px;
+  .player button {
+    background: none;
+    border: 2px solid #ff3c78;
+    color: #fff;
+    padding: 10px 12px;
     border-radius: 50%;
     cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .player button:hover {
+    background: #ff3c78;
+    color: #111;
+  }
+
+  audio {
+    display: none;
+  }
+
+  /* Social icons */
+  .socials {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    gap: 15px;
+  }
+
+  .socials a {
     color: #fff;
-    transition: 0.2s;
+    font-size: 1.2rem;
+    transition: 0.3s;
   }
 
-  .player-controls button:hover {
-    background: #f0c674;
+  .socials a:hover {
+    color: #0ff;
   }
-
 </style>
 </head>
 <body>
 
-<nav>
-  <h1>Play It Out</h1>
-  <ul>
-    <li>Home</li>
-    <li>Logout</li>
-  </ul>
-</nav>
-
 <div class="playlist">
-  <h2>Playlist</h2>
-  <ul>
-    <li data-src="song1.mp3">Lofi Beat 1</li>
-    <li data-src="song2.mp3">Lofi Beat 2</li>
-    <li data-src="song3.mp3">Lofi Beat 3</li>
-    <li data-src="song4.mp3">Lofi Chill</li>
-  </ul>
-</div>
-
-<div class="main">
-  <h2 style="padding:20px; color:#f0c674;">Select a song from the playlist</h2>
+  <h2>LOFI MUSIC</h2>
+  <div class="playlist-item" data-src="song1.mp3">BOOTLEG SMOKE</div>
+  <div class="playlist-item" data-src="song2.mp3">CHILLHOP RACCOON</div>
+  <div class="playlist-item" data-src="song3.mp3">COLLEGE GIRL</div>
+  <div class="playlist-item" data-src="song4.mp3">EVERYTHING FADES TO BLUE</div>
+  <div class="playlist-item" data-src="song5.mp3">HOUSE IN THE WOODS</div>
 </div>
 
 <div class="player">
-  <div class="player-controls">
-    <button id="prev">&#9664;</button>
-    <button id="play">&#9654;</button>
-    <button id="next">&#9654;&#9654;</button>
-  </div>
+  <button id="prev"><i class="fa-solid fa-backward"></i></button>
+  <button id="play"><i class="fa-solid fa-play"></i></button>
+  <button id="next"><i class="fa-solid fa-forward"></i></button>
   <audio id="audio" controls></audio>
 </div>
 
+<div class="socials">
+  <a href="#"><i class="fab fa-facebook"></i></a>
+  <a href="#"><i class="fab fa-instagram"></i></a>
+  <a href="#"><i class="fab fa-twitter"></i></a>
+  <a href="#"><i class="fab fa-spotify"></i></a>
+</div>
+
 <script>
-const playlist = document.querySelectorAll('.playlist ul li');
+const playlistItems = document.querySelectorAll('.playlist-item');
 const audio = document.getElementById('audio');
 let currentIndex = 0;
 
 function loadSong(index){
-  audio.src = playlist[index].getAttribute('data-src');
+  audio.src = playlistItems[index].getAttribute('data-src');
   audio.play();
 }
 
-playlist.forEach((song, index) => {
-  song.addEventListener('click', () => {
+playlistItems.forEach((item, index) => {
+  item.addEventListener('click', () => {
     currentIndex = index;
     loadSong(currentIndex);
   });
@@ -179,12 +150,12 @@ document.getElementById('play').addEventListener('click', () => {
 });
 
 document.getElementById('prev').addEventListener('click', () => {
-  currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+  currentIndex = (currentIndex - 1 + playlistItems.length) % playlistItems.length;
   loadSong(currentIndex);
 });
 
 document.getElementById('next').addEventListener('click', () => {
-  currentIndex = (currentIndex + 1) % playlist.length;
+  currentIndex = (currentIndex + 1) % playlistItems.length;
   loadSong(currentIndex);
 });
 </script>
