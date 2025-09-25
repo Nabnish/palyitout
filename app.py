@@ -39,7 +39,6 @@ except Exception as e:
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = "https://playitout.onrender.com/spotify/callback"
-
 SCOPE = "playlist-modify-public playlist-modify-private"
 
 # Routes
@@ -134,7 +133,6 @@ def gemini():
 
     return render_template("gemini.html", response=response_text, songs=song_list)
 
-
 @app.route("/spotify/login")
 def spotify_login():
     if "user_id" not in session:
@@ -143,8 +141,7 @@ def spotify_login():
         SPOTIFY_CLIENT_ID,
         SPOTIFY_CLIENT_SECRET,
         SPOTIFY_REDIRECT_URI,
-        scope=SCOPE,
-        cache_path=f".cache-{session['username']}"
+        scope=SCOPE
     )
     return redirect(sp_oauth.get_authorize_url())
 
@@ -154,8 +151,7 @@ def spotify_callback():
         SPOTIFY_CLIENT_ID,
         SPOTIFY_CLIENT_SECRET,
         SPOTIFY_REDIRECT_URI,
-        scope=SCOPE,
-        cache_path=f".cache-{session['username']}"
+        scope=SCOPE
     )
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
@@ -188,13 +184,5 @@ def create_spotify_playlist():
     # Redirect user to Spotify web player
     return redirect(playlist['external_urls']['spotify'])
 
-@app.route("/playlist")
-def playlist_page():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-    tracks = session.get("playlist_tracks", [])
-    return render_template("playlist.html", songs=tracks)
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
