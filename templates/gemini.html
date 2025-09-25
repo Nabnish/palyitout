@@ -1,104 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gemini AI - One Sound</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background: url('https://i.pinimg.com/736x/29/c5/7f/29c57fed3a59e064c1cecea1e04ddea3.jpg') center/cover no-repeat;
-      color: white;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .container {
-      position: relative;
-      z-index: 1;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 30px;
-      background: rgba(0,0,0,0.5);
-      animation: fadeInContainer 1s ease forwards;
-    }
-    .chat-header { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
-    .chat-box {
-      width: 100%;
-      max-width: 500px;
-      background: rgba(0,0,0,0.7);
-      border-radius: 15px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      max-height: 50vh;
-      overflow-y: auto;
-    }
-    .message { padding: 12px 18px; border-radius: 15px; line-height: 1.4; max-width: 80%; }
-    .message.user { align-self: flex-end; background: #ff004c; color: white; border-bottom-right-radius: 0; }
-    .message.ai { align-self: flex-start; background: rgba(255,255,255,0.1); color: white; border-bottom-left-radius: 0; }
-    .chat-input { margin-top: 20px; width: 100%; max-width: 500px; display: flex; gap: 10px; }
-    .chat-input input { flex: 1; padding: 12px 18px; border-radius: 25px; border: none; font-size: 16px; background: rgba(255,255,255,0.1); color: white; }
-    .chat-input button, .playlist-button { padding: 12px 25px; border-radius: 25px; border: none; background: #ff004c; color: white; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
-    .chat-input button:hover, .playlist-button:hover { background: #e60042; box-shadow: 0 0 12px #ff004c, 0 0 24px #ff004c; }
-    @keyframes fadeInContainer { from { opacity:0; } to { opacity:1; } }
-    .playlist { margin-top: 20px; max-width: 500px; }
-    .song { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .song img { border-radius: 8px; }
-  </style>
-</head>
 <body>
   <div class="container">
-    <div class="chat-header">Gemini AI</div>
-
-    <div class="chat-box">
-      {% if response %}
-        <div class="message user">{{ request.form.get('message') }}</div>
-        <div class="message ai">{{ response }}</div>
-      {% else %}
-        <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
-      {% endif %}
-    </div>
-
-    <form method="POST" class="chat-input">
-      <input type="text" name="message" placeholder="Type a message..." required>
-      <button type="submit">Send</button>
-    </form>
-
-    {% if songs %}
-      <div class="playlist">
-        <h3>Your Playlist:</h3>
-        {% for song in songs %}
-          <div class="song">
-            <img src="{{ song.album_art }}" width="60" height="60">
-            <div style="flex:1;">
-              <strong>{{ song.title }}</strong> - {{ song.artist }}<br>
-              {% if song.uri %}
-                <audio controls style="width: 100%;">
-                  <source src="{{ song.uri }}" type="audio/mpeg">
-                </audio>
-              {% endif %}
-              {% if spotify_connected %}
-                <a href="{{ song.spotify_url }}" target="_blank" style="color:#ff004c;">Open in Spotify</a>
-              {% endif %}
+    <div class="chat-container">
+      <!-- Playlist column -->
+      <div class="playlist-column">
+        {% if songs %}
+          <h3>Your Playlist:</h3>
+          {% for song in songs %}
+            <div class="song">
+              <img src="{{ song.album_art }}" width="60" height="60">
+              <div style="flex:1;">
+                <strong>{{ song.title }}</strong> - {{ song.artist }}<br>
+                {% if song.uri %}
+                  <audio controls style="width: 100%;">
+                    <source src="{{ song.uri }}" type="audio/mpeg">
+                  </audio>
+                {% endif %}
+                {% if spotify_connected %}
+                  <a href="{{ song.spotify_url }}" target="_blank" style="color:#ff004c;">Open in Spotify</a>
+                {% endif %}
+              </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        {% endif %}
       </div>
-    {% endif %}
 
-    {% if spotify_connected %}
-      <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
-        <input type="hidden" name="songs" value="{{ song_str }}">
-        <button type="submit" class="playlist-button">Create Spotify Playlist</button>
-      </form>
-    {% else %}
-      <a href="{{ url_for('spotify_login') }}" class="playlist-button" style="margin-top: 15px;">Connect Spotify</a>
-    {% endif %}
+      <!-- Chat + info column -->
+      <div class="chat-column">
+        <div class="chat-box">
+          {% if response %}
+            <div class="message user">{{ request.form.get('message') }}</div>
+            <div class="message ai">{{ response }}</div>
+          {% else %}
+            <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
+          {% endif %}
+        </div>
+
+        <!-- Keyboard + Spotify buttons -->
+        <div class="chat-footer">
+          <form method="POST" class="chat-input">
+            <input type="text" name="message" placeholder="Type a message..." required>
+            <button type="submit">Send</button>
+          </form>
+
+          {% if spotify_connected %}
+            <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
+              <input type="hidden" name="songs" value="{{ song_str }}">
+              <button type="submit" class="playlist-button">Create Spotify Playlist</button>
+            </form>
+          {% else %}
+            <a href="{{ url_for('spotify_login') }}" class="playlist-button">Connect Spotify</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Right info panel -->
+      <div class="info-column">
+        <h3>Info Panel</h3>
+        <p>Some info or stats about your playlist or AI suggestions can go here.</p>
+      </div>
+    </div>
   </div>
+
+  <style>
+    body { margin:0; font-family: Arial,sans-serif; background:#000; color:white; }
+    .container { display:flex; height:100vh; width:100%; padding:0; }
+    .chat-container { display:flex; flex:1; height:100%; }
+    .playlist-column { width:300px; padding:20px; background:rgba(0,0,0,0.7); overflow-y:auto; }
+    .chat-column { flex:1; display:flex; flex-direction:column; justify-content:flex-end; padding:20px; }
+    .chat-box { flex:1; overflow-y:auto; background:rgba(0,0,0,0.5); padding:20px; border-radius:15px; margin-bottom:10px; }
+    .chat-footer { display:flex; flex-direction:column; gap:10px; }
+    .chat-input { display:flex; gap:10px; }
+    .chat-input input { flex:1; padding:12px; border-radius:25px; border:none; background:rgba(255,255,255,0.1); color:white; }
+    .chat-input button, .playlist-button { padding:12px 20px; border-radius:25px; border:none; background:#ff004c; color:white; cursor:pointer; }
+    .chat-input button:hover, .playlist-button:hover { background:#e60042; }
+    .info-column { width:200px; padding:20px; background:rgba(0,0,0,0.6); }
+    .song { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .song img { border-radius:8px; }
+  </style>
 </body>
-</html>
