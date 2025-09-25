@@ -103,7 +103,7 @@ def gemini():
         return redirect(url_for("login"))
 
     response_text = ""
-    song_list = []
+    song_list = session.get("song_list", [])
 
     if request.method == "POST":
         user_input = request.form["message"]
@@ -112,58 +112,54 @@ def gemini():
             prompt = f"""
             The user said: {user_input}.
             Generate a playlist of songs matching this vibe.
-            IMPORTANT: Reply ONLY with a comma-separated list of song titles and artist names.
+            Reply ONLY with a comma-separated list of song titles and artist names.
             """
             response = model.generate_content(prompt)
             response_text = response.text.strip()
 
-            # Prepare song_list
+            song_list = []
             for s in response_text.split(','):
                 if '-' in s:
                     title, artist = s.strip().split('-', 1)
                     song_list.append({
                         "title": title.strip(),
                         "artist": artist.strip(),
-                        "uri": "",  # optional Spotify preview
+                        "uri": "",  
                         "album_art": "https://via.placeholder.com/60"
                     })
-
-            # Redirect to playlist page
-            session["song_list"] = song_list  # save in session
-            return redirect(url_for("playlist"))
+            session["song_list"] = song_list
 
         except Exception as e:
-            response_text = f"An error occurred: {e}"
-            flash("Failed to generate playlist.", "error")
+            flash(f"Failed to generate playlist: {e}", "error")
+        import spotipy
+        from spotipy.oauth2 import SpotifyOAuth
+        if 'spotify_token' in session:
+            sp = spotipy.Spotify(auth=session['spotify_token'])
+            for song in song_list:
+                query = f"{song['title']} {song['artist']}"
+                results = sp.search(q=query, type='track', limit=1)
+            if results['tracks']['items']:
+                track = results['tracks']['items'][0]
+                song['uri'] = track['preview_url']   # 30s preview
+                song['spotify_url'] = track['external_urls']['spotify']
+                song['album_art'] = track['album']['images'][0]['url']
 
-    return render_template("gemini.html", response=response_text, username=session["username"])
-@app.route("/playlist")
-def playlist():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-    
-    song_list = session.get("song_list", [])
-    if not song_list:
-        flash("No playlist available. Generate one first!", "error")
-        return redirect(url_for("gemini"))
 
-    # Add Spotify preview URLs and album art if Spotify is connected
+    # If Spotify connected, fetch preview URLs
     spotify_token = session.get("spotify_token")
-    if spotify_token:
+    if spotify_token and song_list:
         sp = spotipy.Spotify(auth=spotify_token)
         for song in song_list:
             query = f"{song['title']} {song['artist']}"
             results = sp.search(q=query, limit=1, type='track')
             if results['tracks']['items']:
                 track = results['tracks']['items'][0]
-                song['uri'] = track['preview_url'] or ""  # 30s preview URL
-                song['album_art'] = track['album']['images'][0]['url']
+                song['uri'] = track['preview_url'] or ""
                 song['spotify_url'] = track['external_urls']['spotify']
+                song['album_art'] = track['album']['images'][0]['url']
 
-    # Filter out songs with no preview to avoid broken audio
-    playable_songs = [s for s in song_list if s.get('uri')]
+    return render_template("gemini.html", response=response_text, songs=song_list, spotify_connected=bool(spotify_token))
 
-    return render_template("playlist.html", songs=song_list, username=session["username"])
 
 @app.route("/spotify/login")
 def spotify_login():

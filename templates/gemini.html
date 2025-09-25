@@ -144,6 +144,51 @@
     </form>
     {% endif %}
   </div>
+  <div class="chat-box">
+    {% if response %}
+      <div class="message user">{{ request.form.get('message') }}</div>
+      <div class="message ai">{{ response }}</div>
+    {% else %}
+      <div class="message ai">Hello! I'm Gemini AI. Ask me for a playlist!</div>
+    {% endif %}
+  </div>
+  
+  <form method="POST" class="chat-input">
+    <input type="text" name="message" placeholder="Type a message..." required>
+    <button type="submit">Send</button>
+  </form>
+  
+  {% if songs %}
+    <div class="playlist" style="margin-top: 20px; max-width: 500px;">
+      <h3>Your Playlist:</h3>
+      {% for song in songs %}
+        <div class="song" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+          <img src="{{ song.album_art }}" alt="Album Art" width="60" height="60" style="border-radius: 8px;">
+          <div style="flex: 1;">
+            <strong>{{ song.title }}</strong> - {{ song.artist }}<br>
+            {% if song.uri %}
+              <audio controls style="width: 100%;">
+                <source src="{{ song.uri }}" type="audio/mpeg">
+              </audio>
+            {% endif %}
+            {% if spotify_connected %}
+              <a href="{{ song.spotify_url }}" target="_blank" style="color: #ff004c;">Open in Spotify</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  {% if spotify_connected %}
+    <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
+      <input type="hidden" name="songs" value="{{ response }}">
+      <button type="submit" class="playlist-button" style="margin-top: 15px;">Create Spotify Playlist</button>
+    </form>
+  {% else %}
+    <a href="{{ url_for('spotify_login') }}" class="playlist-button" style="margin-top: 15px;">Connect Spotify</a>
+  {% endif %}
+  
 </body>
 
 </html>
