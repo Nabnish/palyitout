@@ -1,32 +1,23 @@
-Description:
-This project is a web-based music discovery and playback platform built with Flask, Spotify API, and Google Gemini AI. It allows users to:
+# 🎵 Play It Out  
 
-Sign up and log in securely with hashed passwords.
+AI-powered music assistant that lets you **chat, generate playlists, and connect with Spotify**.  
+Built with **Flask, Spotipy, Google Generative AI, and Render deployment**.  
 
-Interact with Gemini AI to generate playlists based on moods or prompts. The AI returns a curated list of songs matching the user’s vibe.
+---
 
-Preview songs directly in the browser with a sleek custom music player interface, including a sidebar, playlist queue, and player controls.
+## 🚀 Features  
+- 💬 **AI Chat** – Ask Gemini AI to suggest music or create playlists.  
+- 🎧 **Playlist Management** – View and play tracks inside the app.  
+- 🔗 **Spotify Integration** – Login and export playlists to your Spotify account.  
+- 🎨 **Modern UI** – Transparent panels with a custom background image.  
+- 🌐 **Deployed on Render** – Easy one-click deployment.  
 
-Connect their Spotify account to fetch real track previews and album art. Users can also create a Spotify playlist directly from the generated songs.
+---
 
-Enjoy a modern, visually engaging UI, with dynamic chat interface, playlist player, and responsive design.
 
-Technologies Used:
+## 📦 Installation  
 
-Backend: Python, Flask, SQLite
-
-APIs: Google Gemini AI, Spotify Web API
-
-Frontend: HTML, CSS, JavaScript
-
-Security: Password hashing, user session management
-
-Key Features:
-
-AI-driven playlist generation.
-
-Full-featured in-browser music player with queue and controls.
-
-Seamless Spotify integration for real song previews and playlist creation.
-
-Interactive, responsive UI with chat-based user input.
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/your-username/playitout.git
+   cd playitout
