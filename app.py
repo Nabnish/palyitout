@@ -38,7 +38,8 @@ except Exception as e:
 # Spotify config
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
-SPOTIFY_REDIRECT_URI = "http://127.0.0.1:5000/spotify/callback"
+SPOTIFY_REDIRECT_URI = "https://playitout.onrender.com/spotify/callback"
+
 SCOPE = "playlist-modify-public playlist-modify-private"
 
 # Routes
@@ -102,7 +103,7 @@ def gemini():
         return redirect(url_for("login"))
 
     response_text = ""
-    song_list = session.get("song_list", [])
+    song_list = []
 
     if request.method == "POST":
         user_input = request.form["message"]
@@ -116,36 +117,23 @@ def gemini():
             response = model.generate_content(prompt)
             response_text = response.text.strip()
 
+            # Build song list
             song_list = []
             for s in response_text.split(','):
                 if '-' in s:
                     title, artist = s.strip().split('-', 1)
                     song_list.append({
                         "title": title.strip(),
-                        "artist": artist.strip(),
-                        "uri": "",  
-                        "spotify_url": "",
-                        "album_art": "https://via.placeholder.com/60"
+                        "artist": artist.strip()
                     })
-            session["song_list"] = song_list
+
+            session["song_list"] = song_list  # store for Spotify playlist
 
         except Exception as e:
             flash(f"Failed to generate playlist: {e}", "error")
 
-    # If Spotify connected, fetch preview URLs
-    spotify_token = session.get("spotify_token")
-    if spotify_token and song_list:
-        sp = spotipy.Spotify(auth=spotify_token)
-        for song in song_list:
-            query = f"{song['title']} {song['artist']}"
-            results = sp.search(q=query, limit=1, type='track')
-            if results['tracks']['items']:
-                track = results['tracks']['items'][0]
-                song['uri'] = track['preview_url'] or ""
-                song['spotify_url'] = track['external_urls']['spotify']
-                song['album_art'] = track['album']['images'][0]['url']
+    return render_template("gemini.html", response=response_text, songs=song_list)
 
-    return render_template("gemini.html", response=response_text, songs=song_list, spotify_connected=bool(spotify_token))
 
 @app.route("/spotify/login")
 def spotify_login():
@@ -176,33 +164,29 @@ def spotify_callback():
 
 @app.route("/create_spotify_playlist", methods=["POST"])
 def create_spotify_playlist():
-    if "spotify_token" not in session:
-        flash("Connect your Spotify account first!", "error")
+    if "spotify_token" not in session or "song_list" not in session:
+        flash("Connect Spotify and generate a playlist first!", "error")
         return redirect(url_for("gemini"))
 
-    songs = request.form["songs"].split(',')
+    songs = session["song_list"]
     sp = spotipy.Spotify(auth=session["spotify_token"])
     user_id = sp.current_user()['id']
+
+    # Create Spotify playlist
     playlist = sp.user_playlist_create(user_id, name="Gemini AI Playlist", public=True)
 
-    track_list = []
-
+    track_uris = []
     for song in songs:
-        results = sp.search(q=song.strip(), limit=1, type='track')
+        query = f"{song['title']} {song['artist']}"
+        results = sp.search(q=query, limit=1, type='track')
         if results['tracks']['items']:
-            track = results['tracks']['items'][0]
-            track_list.append({
-                "title": track['name'],
-                "artist": track['artists'][0]['name'],
-                "uri": track['preview_url'],        # 30s preview
-                "spotify_url": track['external_urls']['spotify']
-            })
-            # Add track to Spotify playlist
-            sp.playlist_add_items(playlist['id'], [track['uri']])
+            track_uris.append(results['tracks']['items'][0]['uri'])
 
-    session["playlist_tracks"] = track_list
+    if track_uris:
+        sp.playlist_add_items(playlist['id'], track_uris)
 
-    return redirect(url_for("playlist_page"))
+    # Redirect user to Spotify web player
+    return redirect(playlist['external_urls']['spotify'])
 
 @app.route("/playlist")
 def playlist_page():
