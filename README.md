@@ -14,10 +14,5 @@ Built with **Flask, Spotipy, Google Generative AI, and Render deployment**.
 
 ---
 
-
-## 📦 Installation  
-
-1. Clone the repo:
-   ```bash
-   git clone https://github.com/your-username/playitout.git
-   cd playitout
+Web-site live at:
+https://playitout.onrender.com
