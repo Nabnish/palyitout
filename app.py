@@ -133,16 +133,7 @@ def gemini():
 
     return render_template("gemini.html", response=response_text, songs=song_list)
 
-@app.route("/spotify_login")
-def spotify_login():
-    auth_manager = SpotifyOAuth(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        redirect_uri=REDIRECT_URI,
-        scope="playlist-modify-public"
-    )
-    auth_url = auth_manager.get_authorize_url()
-    return redirect(auth_url)
+
 
 
 REDIRECT_URI = "https://your-app.onrender.com/spotify/callback"
