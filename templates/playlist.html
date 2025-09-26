@@ -148,8 +148,9 @@
 </head>
 <body>
   <video autoplay muted loop>
-    <source src="bgvideo.mp4" type="video/mp4">
+    <source src="{{ url_for('static', filename='videos/bgvideo.mp4') }}" type="video/mp4">
   </video>
+  
 
   <ul class="nav">
     <li>Play it out</li>
@@ -158,14 +159,7 @@
     <li>Logout</li>
   </ul>
 
-  <div class="playlist">
-    <h2>LOFI MUSIC</h2>
-    <div class="playlist-item" data-src="song1.mp3">BOOTLEG SMOKE</div>
-    <div class="playlist-item" data-src="song2.mp3">CHILLHOP RACCOON</div>
-    <div class="playlist-item" data-src="song3.mp3">COLLEGE GIRL</div>
-    <div class="playlist-item" data-src="song4.mp3">EVERYTHING FADES TO BLUE</div>
-    <div class="playlist-item" data-src="song5.mp3">HOUSE IN THE WOODS</div>
-  </div>
+
 
   <div class="player">
     <button id="prev"><i class="fa-solid fa-backward"></i></button>
