@@ -181,8 +181,9 @@ def create_spotify_playlist():
     if track_uris:
         sp.playlist_add_items(playlist['id'], track_uris)
 
-    # Redirect user to Spotify web player
-    return redirect(playlist['external_urls']['spotify'])
+    # ⬇️ Instead of redirecting OUT, render your player
+    return render_template("playlist.html", songs=songs, playlist_url=playlist['external_urls']['spotify'])
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

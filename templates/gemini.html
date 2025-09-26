@@ -150,12 +150,12 @@
         </form>
 
         {% if spotify_connected %}
-          <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
-            <input type="hidden" name="songs" value="{{ song_str }}">
-            <button type="submit" class="playlist-button">Create Spotify Playlist</button>
-          </form>
+        <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
+          <button type="submit" class="playlist-button">Create Spotify Playlist</button>
+      </form>
+      
         {% else %}
-        <a href="{{ url_for('spotify_login') }}" target="_blank" class="playlist-button">Connect Spotify</a>
+        <a href="{{ url_for('spotify_login') }}" class="playlist-button">Connect Spotify</a>
 
         {% endif %}
       </div>
