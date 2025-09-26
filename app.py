@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
@@ -17,11 +18,14 @@ DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "users.db")
 # Initialize database
 def init_db():
     conn = sqlite3.connect(DB_PATH)
-    conn.execute("""CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    email TEXT,
-                    password TEXT NOT NULL)""")
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT,
+            password TEXT NOT NULL
+        )
+    """)
     conn.close()
 
 init_db()
@@ -133,39 +137,39 @@ def gemini():
 
     return render_template("gemini.html", response=response_text, songs=song_list)
 
+# Spotify login
+@app.route("/spotify_login")
+def spotify_login():
+    auth_manager = SpotifyOAuth(
+        client_id=SPOTIFY_CLIENT_ID,
+        client_secret=SPOTIFY_CLIENT_SECRET,
+        redirect_uri=SPOTIFY_REDIRECT_URI,
+        scope=SCOPE
+    )
+    auth_url = auth_manager.get_authorize_url()
+    return redirect(auth_url)
 
-
-
-REDIRECT_URI = "https://your-app.onrender.com/spotify/callback"
-
+# Spotify callback
 @app.route("/spotify/callback")
 def spotify_callback():
     code = request.args.get("code")
     if not code:
-        flash("Authorization failed.", "error")
+        flash("Spotify authorization failed.", "error")
         return redirect(url_for("gemini"))
 
-    # Exchange code for token
     auth_manager = SpotifyOAuth(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        redirect_uri=REDIRECT_URI,
-        scope="playlist-modify-public"
+        client_id=SPOTIFY_CLIENT_ID,
+        client_secret=SPOTIFY_CLIENT_SECRET,
+        redirect_uri=SPOTIFY_REDIRECT_URI,
+        scope=SCOPE
     )
     token_info = auth_manager.get_access_token(code)
     session["spotify_token"] = token_info["access_token"]
 
-    # ✅ Optional: fetch user songs stored earlier
     songs = session.get("song_list", [])
-
-    # Render playlist.html right away
     return render_template("playlist.html", songs=songs)
 
-    code = request.args.get('code')
-    token_info = sp_oauth.get_access_token(code)
-    session["spotify_token"] = token_info['access_token']
-    return redirect(url_for("gemini"))
-
+# Create Spotify playlist
 @app.route("/create_spotify_playlist", methods=["POST"])
 def create_spotify_playlist():
     if "spotify_token" not in session or "song_list" not in session:
@@ -188,23 +192,11 @@ def create_spotify_playlist():
     if track_uris:
         sp.playlist_add_items(playlist['id'], track_uris)
 
-    # ✅ Directly render the playlist page here
     return render_template(
         "playlist.html",
         songs=songs,
         playlist_url=playlist['external_urls']['spotify']
     )
-@app.route("/spotify_login")
-def spotify_login():
-    auth_manager = SpotifyOAuth(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        redirect_uri=REDIRECT_URI,
-        scope="playlist-modify-public"
-    )
-    auth_url = auth_manager.get_authorize_url()
-    return redirect(auth_url)
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
