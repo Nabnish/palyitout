@@ -152,7 +152,8 @@
         {% if spotify_connected %}
         <form method="POST" action="{{ url_for('create_spotify_playlist') }}">
           <button type="submit" class="playlist-button">Create Spotify Playlist</button>
-      </form>
+        </form>
+        
       
         {% else %}
         <a href="{{ url_for('spotify_login') }}" class="playlist-button">Connect Spotify</a>

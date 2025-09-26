@@ -168,7 +168,6 @@ def create_spotify_playlist():
     sp = spotipy.Spotify(auth=session["spotify_token"])
     user_id = sp.current_user()['id']
 
-    # Create Spotify playlist
     playlist = sp.user_playlist_create(user_id, name="Gemini AI Playlist", public=True)
 
     track_uris = []
@@ -181,8 +180,12 @@ def create_spotify_playlist():
     if track_uris:
         sp.playlist_add_items(playlist['id'], track_uris)
 
-    # ⬇️ Instead of redirecting OUT, render your player
-    return render_template("playlist.html", songs=songs, playlist_url=playlist['external_urls']['spotify'])
+    # ✅ Directly render the playlist page here
+    return render_template(
+        "playlist.html",
+        songs=songs,
+        playlist_url=playlist['external_urls']['spotify']
+    )
 
 
 if __name__ == "__main__":
