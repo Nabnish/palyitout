@@ -133,26 +133,43 @@ def gemini():
 
     return render_template("gemini.html", response=response_text, songs=song_list)
 
-@app.route("/spotify/login")
+@app.route("/spotify_login")
 def spotify_login():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-    sp_oauth = SpotifyOAuth(
-        SPOTIFY_CLIENT_ID,
-        SPOTIFY_CLIENT_SECRET,
-        SPOTIFY_REDIRECT_URI,
-        scope=SCOPE
+    auth_manager = SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        scope="playlist-modify-public"
     )
-    return redirect(sp_oauth.get_authorize_url())
+    auth_url = auth_manager.get_authorize_url()
+    return redirect(auth_url)
+
+
+REDIRECT_URI = "https://your-app.onrender.com/spotify/callback"
 
 @app.route("/spotify/callback")
 def spotify_callback():
-    sp_oauth = SpotifyOAuth(
-        SPOTIFY_CLIENT_ID,
-        SPOTIFY_CLIENT_SECRET,
-        SPOTIFY_REDIRECT_URI,
-        scope=SCOPE
+    code = request.args.get("code")
+    if not code:
+        flash("Authorization failed.", "error")
+        return redirect(url_for("gemini"))
+
+    # Exchange code for token
+    auth_manager = SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        scope="playlist-modify-public"
     )
+    token_info = auth_manager.get_access_token(code)
+    session["spotify_token"] = token_info["access_token"]
+
+    # ✅ Optional: fetch user songs stored earlier
+    songs = session.get("song_list", [])
+
+    # Render playlist.html right away
+    return render_template("playlist.html", songs=songs)
+
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     session["spotify_token"] = token_info['access_token']
@@ -186,6 +203,16 @@ def create_spotify_playlist():
         songs=songs,
         playlist_url=playlist['external_urls']['spotify']
     )
+@app.route("/spotify_login")
+def spotify_login():
+    auth_manager = SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        scope="playlist-modify-public"
+    )
+    auth_url = auth_manager.get_authorize_url()
+    return redirect(auth_url)
 
 
 if __name__ == "__main__":
