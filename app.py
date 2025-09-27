@@ -43,7 +43,7 @@ except Exception as e:
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 SPOTIFY_REDIRECT_URI = "https://playitout.onrender.com/spotify/callback"
-SCOPE = "playlist-modify-public playlist-modify-private"
+SCOPE = "playlist-modify-public playlist-modify-private,user-modify-playback-state,user-read-playback-state"
 
 # Routes
 @app.route("/")
@@ -120,17 +120,28 @@ def gemini():
             response = model.generate_content(prompt)
             response_text = response.text.strip()
 
-            # Build song list
+            # Prepare Spotify object if token exists
+            sp = None
+            if "spotify_token" in session:
+                sp = spotipy.Spotify(auth=session["spotify_token"])
+
+            # Build song list with URI
             song_list = []
             for s in response_text.split(','):
                 if '-' in s:
                     title, artist = s.strip().split('-', 1)
+                    track_uri = None
+                    if sp:
+                        results = sp.search(q=f"{title} {artist}", limit=1, type='track')
+                        if results['tracks']['items']:
+                            track_uri = results['tracks']['items'][0]['uri']
                     song_list.append({
                         "title": title.strip(),
-                        "artist": artist.strip()
+                        "artist": artist.strip(),
+                        "uri": track_uri
                     })
 
-            session["song_list"] = song_list  # store for Spotify playlist
+            session["song_list"] = song_list
 
         except Exception as e:
             flash(f"Failed to generate playlist: {e}", "error")
@@ -182,13 +193,8 @@ def create_spotify_playlist():
 
     playlist = sp.user_playlist_create(user_id, name="Gemini AI Playlist", public=True)
 
-    track_uris = []
-    for song in songs:
-        query = f"{song['title']} {song['artist']}"
-        results = sp.search(q=query, limit=1, type='track')
-        if results['tracks']['items']:
-            track_uris.append(results['tracks']['items'][0]['uri'])
-
+    # Use stored URIs directly
+    track_uris = [song['uri'] for song in songs if song.get('uri')]
     if track_uris:
         sp.playlist_add_items(playlist['id'], track_uris)
 
