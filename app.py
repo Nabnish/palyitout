@@ -176,14 +176,13 @@ def spotify_callback():
     token_info = auth_manager.get_access_token(code)
     session["spotify_token"] = token_info["access_token"]
 
-    # ✅ keep the Gemini playlist
-    songs = session.get("song_list", [])
+    # ✅ Grab Gemini playlist if exists
+    songs = session.get("song_list")
+    if not songs:
+        flash("No playlist found. Please generate one with Gemini first!", "info")
+        return redirect(url_for("gemini"))
 
-    return render_template(
-        "playlist.html",
-        songs=songs,
-        spotify_connected=True
-    )
+    return redirect(url_for("playlist"))
 
 
 # Create Spotify playlist
@@ -209,6 +208,15 @@ def create_spotify_playlist():
         songs=songs,
         playlist_url=playlist['external_urls']['spotify']
     )
+@app.route("/playlist")
+def playlist():
+    if "spotify_token" not in session:
+        flash("Connect Spotify first!", "error")
+        return redirect(url_for("gemini"))
+
+    songs = session.get("song_list", [])
+    return render_template("playlist.html", songs=songs)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
