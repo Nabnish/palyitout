@@ -8,186 +8,34 @@
   <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-      color: #fff;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* Background video */
-    video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -2;
-    }
-
-    /* Dark overlay */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: -1;
-    }
-
-    /* Nav */
-    .nav {
-      list-style: none;
-      display: flex;
-      justify-content: flex-end;
-      gap: 30px;
-      padding: 20px 40px;
-      font-size: 1.2rem;
-      background: rgba(0, 0, 0, 0.4);
-      box-shadow: 0 2px 10px #000;
-    }
-
-    .nav li {
-      cursor: pointer;
-      transition: .3s;
-    }
-
-    .nav li:hover {
-      color: #ff3c78;
-      transform: scale(1.1);
-    }
-
-    /* Playlist */
-    .playlist {
-      position: absolute;
-      top: 120px;
-      left: 50px;
-      max-height: 70vh;
-      overflow-y: auto;
-      padding: 20px;
-      backdrop-filter: blur(6px);
-      background: rgba(0, 0, 0, 0.3);
-      border-left: 3px solid #ff3c78;
-      border-radius: 10px;
-      animation: fadein 1s ease;
-    }
-
-    .playlist h2 {
-      margin-bottom: 15px;
-      color: #ff3c78;
-      font-size: 1.5rem;
-    }
-
-    .playlist-item {
-      margin: 10px 0;
-      padding: 8px;
-      cursor: pointer;
-      transition: .3s;
-      border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
-    }
-
-    .playlist-item:hover {
-      color: #0ff;
-      transform: translateX(5px);
-    }
-
-    /* Player */
-    .player {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.7);
-      padding: 20px 30px;
-      border-radius: 25px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      box-shadow: 0 0 20px #ff3c78;
-      animation: glow 3s infinite alternate;
-    }
-
-    .player button {
-      background: none;
-      border: 2px solid #ff3c78;
-      color: #fff;
-      padding: 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: .3s;
-      font-size: 1.1rem;
-    }
-
-    .player button:hover {
-      background: #ff3c78;
-      color: #000;
-    }
-
-    audio {
-      display: none;
-    }
-
-    /* Social icons */
-    .socials {
-      position: absolute;
-      bottom: 40px;
-      right: 40px;
-      display: flex;
-      gap: 20px;
-    }
-
-    .socials a {
-      color: #fff;
-      font-size: 1.5rem;
-      transition: .3s;
-    }
-
-    .socials a:hover {
-      color: #ff3c78;
-      transform: scale(1.2);
-    }
-
-    /* Animations */
-    @keyframes glow {
-      from {
-        box-shadow: 0 0 10px #ff3c78;
-      }
-
-      to {
-        box-shadow: 0 0 25px #0ff;
-      }
-    }
-
-    @keyframes fadein {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; color:#fff; height:100vh; overflow:hidden; }
+    video { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-2; }
+    body::before { content:""; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:-1; }
+    .nav { list-style:none; display:flex; justify-content:flex-end; gap:30px; padding:20px 40px; font-size:1.2rem; background:rgba(0,0,0,0.4); box-shadow:0 2px 10px #000; }
+    .nav li { cursor:pointer; transition:.3s; }
+    .nav li:hover { color:#ff3c78; transform:scale(1.1); }
+    .playlist { position:absolute; top:120px; left:50px; max-height:70vh; overflow-y:auto; padding:20px; backdrop-filter:blur(6px); background:rgba(0,0,0,0.3); border-left:3px solid #ff3c78; border-radius:10px; animation:fadein 1s ease; }
+    .playlist h2 { margin-bottom:15px; color:#ff3c78; font-size:1.5rem; }
+    .playlist-item { margin:10px 0; padding:8px; cursor:pointer; transition:.3s; border-bottom:1px dashed rgba(255,255,255,0.3); }
+    .playlist-item:hover { color:#0ff; transform:translateX(5px); }
+    .player { position:absolute; bottom:40px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); padding:20px 30px; border-radius:25px; display:flex; align-items:center; gap:20px; box-shadow:0 0 20px #ff3c78; animation:glow 3s infinite alternate; }
+    .player button { background:none; border:2px solid #ff3c78; color:#fff; padding:12px; border-radius:50%; cursor:pointer; transition:.3s; font-size:1.1rem; }
+    .player button:hover { background:#ff3c78; color:#000; }
+    audio { display:none; }
+    .socials { position:absolute; bottom:40px; right:40px; display:flex; gap:20px; }
+    .socials a { color:#fff; font-size:1.5rem; transition:.3s; }
+    .socials a:hover { color:#ff3c78; transform:scale(1.2); }
+    @keyframes glow { from { box-shadow:0 0 10px #ff3c78; } to { box-shadow:0 0 25px #0ff; } }
+    @keyframes fadein { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
   </style>
 </head>
 
 <body>
-  <!-- Background video -->
   <video autoplay muted loop>
     <source src="{{ url_for('static', filename='videos/bgvideo.mp4') }}" type="video/mp4">
   </video>
 
-  <!-- Navigation -->
   <ul class="nav">
     <li>Play it out</li>
     <li>Home</li>
@@ -195,15 +43,12 @@
     <li>Logout</li>
   </ul>
 
-  <!-- Player controls -->
   <div class="player">
     <button id="prev"><i class="fa-solid fa-backward"></i></button>
     <button id="play"><i class="fa-solid fa-play"></i></button>
     <button id="next"><i class="fa-solid fa-forward"></i></button>
-    <audio id="audio" controls></audio>
   </div>
 
-  <!-- Social icons -->
   <div class="socials">
     <a href="#"><i class="fab fa-facebook"></i></a>
     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -211,113 +56,59 @@
     <a href="#"><i class="fab fa-spotify"></i></a>
   </div>
 
-  <!-- Playlist -->
   <div class="playlist">
     <h2>Gemini Playlist</h2>
     {% if songs %}
-    {% for song in songs %}
-    <div class="playlist-item" data-uri="{{ song.uri }}">{{ song.title }} - {{ song.artist }}</div>
-    {% endfor %}
+      {% for song in songs %}
+      <div class="playlist-item" data-uri="{{ song.uri }}">{{ song.title }} - {{ song.artist }}</div>
+      {% endfor %}
     {% else %}
-    <p>No songs yet. Go back to Gemini and create one!</p>
+      <p>No songs yet. Go back to Gemini and create one!</p>
     {% endif %}
   </div>
 
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <script>
-  window.onSpotifyWebPlaybackSDKReady = () => {
-    const token = {{ session.get('spotify_token', '') | tojson }};
-    let trackURIs = {{ songs | selectattr('uri') | map(attribute='uri') | list | tojson }};
-    
-    if (!token) {
-      console.warn('No Spotify token in session — playback disabled.');
-      return;
-    }
-    if (!Array.isArray(trackURIs)) trackURIs = [];
-    if (!trackURIs.length) console.info('No tracks in playlist.');
-  
-    // Initialize Spotify Player
-    const player = new Spotify.Player({
-      name: 'Play It Out',
-      getOAuthToken: cb => { cb(token); },
-      volume: 0.7
-    });
-  
-    let deviceId = null;
-    let currentTrack = 0;
-  
-    // Ready
-    player.addListener('ready', ({ device_id }) => {
-      deviceId = device_id;
-      console.log('Player ready with Device ID', device_id);
-  
-      // Auto-play first track
-      if (trackURIs.length) playTrack(0);
-    });
-  
-    // Error handlers
-    player.addListener('initialization_error', ({ message }) => console.error('Init error:', message));
-    player.addListener('authentication_error', ({ message }) => console.error('Auth error:', message));
-    player.addListener('account_error', ({ message }) => console.error('Account error:', message));
-    player.addListener('playback_error', ({ message }) => console.error('Playback error:', message));
-  
-    // Connect player
-    player.connect().then(success => {
-      if (success) console.log('Player connected successfully');
-      else console.warn('Player.connect() resolved false');
-    }).catch(err => console.error('player.connect() failed', err));
-  
-    // Play a specific track
-    const playTrack = (index) => {
-      if (!deviceId) return console.warn('No deviceId yet');
-      if (!trackURIs.length) return console.warn('No tracks to play');
-  
-      const uri = trackURIs[index];
-      if (!uri) return console.warn('No URI for track', index);
-  
-      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ uris: [uri] }),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      }).catch(err => console.error(err));
-    };
-  
-    // Play/Pause
-    const playPauseBtn = document.getElementById('play');
-    if (playPauseBtn) playPauseBtn.addEventListener('click', () => {
-      player.togglePlay().catch(err => console.error('togglePlay error', err));
-    });
-  
-    // Next track
-    const nextBtn = document.getElementById('next');
-    if (nextBtn) nextBtn.addEventListener('click', () => {
-      currentTrack = (currentTrack + 1) % trackURIs.length;
-      playTrack(currentTrack);
-    });
-  
-    // Previous track
-    const prevBtn = document.getElementById('prev');
-    if (prevBtn) prevBtn.addEventListener('click', () => {
-      currentTrack = (currentTrack - 1 + trackURIs.length) % trackURIs.length;
-      playTrack(currentTrack);
-    });
-  
-    // Click on playlist items
-    const items = document.querySelectorAll('.playlist-item');
-    items.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        currentTrack = index;
-        playTrack(currentTrack);
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      const token = {{ session.get('spotify_token', '') | tojson }};
+      let trackURIs = {{ songs | map(attribute='uri') | list | tojson }};
+      if (!token) return console.warn('No Spotify token — playback disabled.');
+
+      const player = new Spotify.Player({
+        name: 'Play It Out',
+        getOAuthToken: cb => cb(token),
+        volume: 0.7
       });
-    });
-  };
+
+      let deviceId = null;
+      let currentTrack = 0;
+
+      player.addListener('ready', ({ device_id }) => {
+        deviceId = device_id;
+        console.log('Ready with deviceId', device_id);
+        if(trackURIs.length) playTrack(0);
+      });
+
+      const playTrack = index => {
+        if (!deviceId || !trackURIs.length) return;
+        currentTrack = index;
+        fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+          method: 'PUT',
+          body: JSON.stringify({ uris: [trackURIs[index]] }),
+          headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` }
+        }).catch(err=>console.error(err));
+      };
+
+      document.getElementById('play').addEventListener('click', () => player.togglePlay().catch(err=>console.error(err)));
+      document.getElementById('next').addEventListener('click', () => playTrack((currentTrack+1)%trackURIs.length));
+      document.getElementById('prev').addEventListener('click', () => playTrack((currentTrack-1+trackURIs.length)%trackURIs.length));
+
+      document.querySelectorAll('.playlist-item').forEach((item,index)=>{
+        item.addEventListener('click',()=>playTrack(index));
+      });
+
+      player.connect().then(success => console.log(success ? 'Player connected' : 'Failed to connect'));
+    };
   </script>
-  
-  
-
 </body>
-
 </html>
