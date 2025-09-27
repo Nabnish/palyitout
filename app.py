@@ -160,7 +160,6 @@ def spotify_login():
     auth_url = auth_manager.get_authorize_url()
     return redirect(auth_url)
 
-# Spotify callback
 @app.route("/spotify/callback")
 def spotify_callback():
     code = request.args.get("code")
@@ -177,8 +176,15 @@ def spotify_callback():
     token_info = auth_manager.get_access_token(code)
     session["spotify_token"] = token_info["access_token"]
 
+    # ✅ keep the Gemini playlist
     songs = session.get("song_list", [])
-    return render_template("playlist.html", songs=songs)
+
+    return render_template(
+        "playlist.html",
+        songs=songs,
+        spotify_connected=True
+    )
+
 
 # Create Spotify playlist
 @app.route("/create_spotify_playlist", methods=["POST"])

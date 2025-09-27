@@ -226,8 +226,8 @@
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <script>
     window.onSpotifyWebPlaybackSDKReady = () => {
-      // Safely inject token and URIs from Jinja (tojson ensures valid JS)
       const token = {{ session.get('spotify_token', '') | tojson }};
+
       let trackURIs = {{ songs | selectattr('uri') | map(attribute='uri') | list | tojson }};
 
   
