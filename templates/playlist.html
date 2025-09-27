@@ -69,46 +69,95 @@
 
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <script>
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      const token = {{ session.get('spotify_token', '') | tojson }};
-      let trackURIs = {{ songs | map(attribute='uri') | list | tojson }};
-      if (!token) return console.warn('No Spotify token — playback disabled.');
-
-      const player = new Spotify.Player({
-        name: 'Play It Out',
-        getOAuthToken: cb => cb(token),
-        volume: 0.7
-      });
-
-      let deviceId = null;
-      let currentTrack = 0;
-
-      player.addListener('ready', ({ device_id }) => {
-        deviceId = device_id;
-        console.log('Ready with deviceId', device_id);
-        if(trackURIs.length) playTrack(0);
-      });
-
-      const playTrack = index => {
-        if (!deviceId || !trackURIs.length) return;
-        currentTrack = index;
-        fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-          method: 'PUT',
-          body: JSON.stringify({ uris: [trackURIs[index]] }),
-          headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` }
-        }).catch(err=>console.error(err));
-      };
-
-      document.getElementById('play').addEventListener('click', () => player.togglePlay().catch(err=>console.error(err)));
-      document.getElementById('next').addEventListener('click', () => playTrack((currentTrack+1)%trackURIs.length));
-      document.getElementById('prev').addEventListener('click', () => playTrack((currentTrack-1+trackURIs.length)%trackURIs.length));
-
-      document.querySelectorAll('.playlist-item').forEach((item,index)=>{
-        item.addEventListener('click',()=>playTrack(index));
-      });
-
-      player.connect().then(success => console.log(success ? 'Player connected' : 'Failed to connect'));
+  window.onSpotifyWebPlaybackSDKReady = () => {
+    const token = {{ session.get('spotify_token', '') | tojson }};
+    let trackURIs = {{ songs | selectattr('uri') | map(attribute='uri') | list | tojson }};
+    
+    if (!token) {
+      console.warn('No Spotify token in session — playback disabled.');
+      return;
+    }
+    if (!Array.isArray(trackURIs)) trackURIs = [];
+    if (!trackURIs.length) console.info('No tracks in playlist.');
+  
+    // Initialize Spotify Player
+    const player = new Spotify.Player({
+      name: 'Play It Out',
+      getOAuthToken: cb => { cb(token); },
+      volume: 0.7
+    });
+  
+    let deviceId = null;
+    let currentTrack = 0;
+  
+    // Ready
+    player.addListener('ready', ({ device_id }) => {
+      deviceId = device_id;
+      console.log('Player ready with Device ID', device_id);
+  
+      // Auto-play first track
+      if (trackURIs.length) playTrack(0);
+    });
+  
+    // Error handlers
+    player.addListener('initialization_error', ({ message }) => console.error('Init error:', message));
+    player.addListener('authentication_error', ({ message }) => console.error('Auth error:', message));
+    player.addListener('account_error', ({ message }) => console.error('Account error:', message));
+    player.addListener('playback_error', ({ message }) => console.error('Playback error:', message));
+  
+    // Connect player
+    player.connect().then(success => {
+      if (success) console.log('Player connected successfully');
+      else console.warn('Player.connect() resolved false');
+    }).catch(err => console.error('player.connect() failed', err));
+  
+    // Play a specific track
+    const playTrack = (index) => {
+      if (!deviceId) return console.warn('No deviceId yet');
+      if (!trackURIs.length) return console.warn('No tracks to play');
+  
+      const uri = trackURIs[index];
+      if (!uri) return console.warn('No URI for track', index);
+  
+      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ uris: [uri] }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      }).catch(err => console.error(err));
     };
+  
+    // Play/Pause
+    const playPauseBtn = document.getElementById('play');
+    if (playPauseBtn) playPauseBtn.addEventListener('click', () => {
+      player.togglePlay().catch(err => console.error('togglePlay error', err));
+    });
+  
+    // Next track
+    const nextBtn = document.getElementById('next');
+    if (nextBtn) nextBtn.addEventListener('click', () => {
+      currentTrack = (currentTrack + 1) % trackURIs.length;
+      playTrack(currentTrack);
+    });
+  
+    // Previous track
+    const prevBtn = document.getElementById('prev');
+    if (prevBtn) prevBtn.addEventListener('click', () => {
+      currentTrack = (currentTrack - 1 + trackURIs.length) % trackURIs.length;
+      playTrack(currentTrack);
+    });
+  
+    // Click on playlist items
+    const items = document.querySelectorAll('.playlist-item');
+    items.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        currentTrack = index;
+        playTrack(currentTrack);
+      });
+    });
+  };
   </script>
 </body>
 </html>
