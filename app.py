@@ -217,6 +217,12 @@ def playlist():
     songs = session.get("song_list", [])
     return render_template("playlist.html", songs=songs)
 
+@app.route("/playlist")
+def myplaylist():
+    
+    return redirect(url_for("playlist"))
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
